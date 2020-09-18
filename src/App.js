@@ -40,8 +40,8 @@ export class App extends Component {
           .then((data) => {
             // console.log(data);
             this.setState({
-                associations: data[0],
-                dataArray: data[1]
+                associations: data[0],  // {"words": scores}
+                dataArray: data[1]      // ["words"]
             })
             this.translateAssociatons();
         })
@@ -49,7 +49,7 @@ export class App extends Component {
     }
 
     populateLanguageDropdown() {
-        fetch('/api/googleTranslateLanguages/')
+        fetch('/api/lingvanexTranslateLanguages')
         .then(response => response.json())
         .then((data) => {
             // console.log(data);
@@ -59,13 +59,13 @@ export class App extends Component {
         })
         .catch((error) => console.log(error));
     }
-
+    
     translateAssociatons() {
         const wordMap = this.state.dataArray;
-        console.log(wordMap);
+        // console.log(wordMap);
         const selectedLanguage = this.state.languageCode;
-        console.log(selectedLanguage);
-        fetch('/api/googleTranslate/', {
+        // console.log(selectedLanguage);
+        fetch('/api/lingvanexTranslate/', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -79,24 +79,17 @@ export class App extends Component {
         })
         .then(response => response.json())
         .then((data) => {
-            console.log(data);
-            // this.setState({
-            //     translatedAssociations: data[0],
-            //     newDataArray: data[1]
-            // })
+            const scoresArray = Object.values(this.state.associations);
+            let translatedData = []
+            for (let i = 0; i < data.length; i++) {
+                translatedData.push([data[i], scoresArray[i]]);
+            }
+            // console.log(translatedData);  // [["translated word", score]]
+            this.setState({
+                translatedAssociations: translatedData  
+            })
         });
     }
-            
-    // The “POST Translate” endpoint returns the translated text for a given input string that is passed to the API as input. Along with the input string, it also expects the language code of the translated language.
-
-    // Send data[1] to Google. Take words out of their reponse, make a copy of this.state.associations & set state of this.state.translatedAssociations. Make a 3rd state for state.translated words to take words & orig. set of values - map them back together. 
-
-    //from Google - array of all words - make sure array is same length as the object - iterate throught the translatedAssociations, for each one replace the word in this.state.associations
-
-    //2 for loops nested 
-    //google how to replace object key value - set up so I iterate through new translated words (map them in to replace one list with the other via nested loop) 
-    
-    //find out what format Google needs me to send them a request in (make sure data fits the format): string or array?
 
     render() {
         return (
@@ -147,17 +140,15 @@ export class App extends Component {
                             })}
                         </select>
                         {this.state.translatedAssociations && (
-                            Object.keys(this.state.translatedAssociations).length === 0
-                            ? <p>No results</p>
-                            : <div>
-                                    {Object.entries(this.state.translatedAssociations).map(([association, score], index) => (
-                                        <span key={index} style={{ fontSize: Math.pow(score, 2) / 200 }}>
-                                            {association}
-                                            {' '}
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
+                            <div>
+                                {this.state.translatedAssociations.map(([association, score], index) => (
+                                    <span key={index} style={{ fontSize: Math.pow(score, 2) / 200 }}>
+                                        {association}
+                                        {' '}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
