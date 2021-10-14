@@ -29,7 +29,7 @@ app.get('/api/associations/:text', (req, res) => {
         }
     })
     .then((response)=>{
-        // console.log(response.data);
+        //console.log(response.data);
         res.json([response.data.associations_scored, response.data.associations_array] || {});
     })
     .catch((error)=>{
@@ -54,6 +54,7 @@ app.get('/api/lingvanexTranslateLanguages', (req, res) => {
         }
     })
     .then((response) => {
+        //console.log(response.data.result);
         const rawData = response.data.result;
         let formattedData = [];
         for (let i = 0; i < rawData.length; i++) {
