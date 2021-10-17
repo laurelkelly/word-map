@@ -114,7 +114,7 @@ export class App extends Component {
                             ? <p>No results</p>
                             : <div>
                                     {Object.entries(this.state.associations).map(([association, score], index) => (
-                                        <span key={index} style={{ fontSize: Math.pow(score, 2) / 200 }}>
+                                        <span key={index} style={{ fontSize: Math.pow(score, 1.65)}}>
                                             {association}
                                             {' '}
                                         </span>
@@ -142,7 +142,7 @@ export class App extends Component {
                         {this.state.translatedAssociations && (
                             <div>
                                 {this.state.translatedAssociations.map(([association, score], index) => (
-                                    <span key={index} style={{ fontSize: Math.pow(score, 2) / 200 }}>
+                                    <span key={index} style={{ fontSize: Math.pow(score, 1.65)}}>
                                         {association}
                                         {' '}
                                     </span>
