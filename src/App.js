@@ -24,11 +24,6 @@ export class App extends Component {
         });
     }
 
-    componentDidUpdate(prevState, prevProps) {
-        console.log({prevState})
-        console.log(this.state, 'this.state')
-    }
-
     handleSubmit(event) {
         event.preventDefault();
         if(this.state.word === '') return;
@@ -43,7 +38,7 @@ export class App extends Component {
         fetch('/api/associations/' + this.state.word)
           .then(response => response.json())
           .then((data) => {
-            console.log(data, 'getAssociations');
+            // console.log(data);
             this.setState({
                 associations: data[0],  // {"words": scores}
                 dataArray: data[1]      // ["words"]
@@ -57,7 +52,7 @@ export class App extends Component {
         fetch('/api/lingvanexTranslateLanguages')
         .then(response => response.json())
         .then((data) => {
-            console.log(data);
+            // console.log(data);
             this.setState({
                 languages: data
             })
@@ -84,37 +79,16 @@ export class App extends Component {
         })
         .then(response => response.json())
         .then((data) => {
-            console.log({data}, 'api lingvanex translate')
             const scoresArray = Object.values(this.state.associations);
             let translatedData = []
             for (let i = 0; i < data.length; i++) {
                 translatedData.push([data[i], scoresArray[i]]);
             }
-            console.log(translatedData, 'is state ok');  // [["translated word", score]]
+            // console.log(translatedData);  // [["translated word", score]]
             this.setState({
                 translatedAssociations: translatedData  
-            }, () => console.log('state updated', this.state.translatedAssociations))
+            })
         });
-    }
-
-    renderWordmap = () => {
-        if (this.state.translateAssociatons) {
-            console.log('rendering wordmap!')
-            return (
-            <div>
-                {this.state.translatedAssociations.map(([association, score], index) => (
-                    <span key={index} style={{ fontSize: Math.pow(score, 2) / 200 }}>
-                        {association}
-                        {' '}
-                    </span>
-                ))}
-            </div>
-            )
-        }
-        else {
-            // Rachel: state updated, but your component did not rerender. What?!!! Time to google
-            console.log('no wordmap to render')
-        }
     }
 
     render() {
@@ -158,13 +132,23 @@ export class App extends Component {
                             value={this.state.languageCode}
                             onChange={this.handleInputChange}
                         >
+                            <option value='initial'>Select a Language</option>
                             {this.state.languages.map((each, index) => {
                                 return (
                                 <option key={index} value={each[0]}>{each[1]}</option>
                                 )
                             })}
                         </select>
-                        {this.renderWordmap()}
+                        {this.state.translatedAssociations && (
+                            <div>
+                                {this.state.translatedAssociations.map(([association, score], index) => (
+                                    <span key={index} style={{ fontSize: Math.pow(score, 2) / 200 }}>
+                                        {association}
+                                        {' '}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
